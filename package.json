@@ -32,8 +32,8 @@
         "title": "NNT: Column from JSON"
       },
       {
-        "command": "nnt-toolkit.translateWithGPT",
-        "title": "NNT: Translate wth GPT"
+        "command": "nnt-toolkit.translateWithGemini",
+        "title": "NNT: Translate with Gemini"
       }
     ],
     "configuration": {
@@ -60,10 +60,15 @@
           "default": "<StringFormat value={value} />",
           "description": "Component render for string type"
         },
-        "nntToolkit.gptApiKey": {
+        "nntToolkit.geminiApiKey": {
           "type": "string",
           "default": "",
-          "description": "GPT API Token"
+          "description": "Gemini API Token"
+        },
+        "nntToolkit.targetLanguage": {
+          "type": "string",
+          "default": "",
+          "description": "Target Language"
         }
       }
     }

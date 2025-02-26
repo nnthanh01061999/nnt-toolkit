@@ -6,6 +6,7 @@ import {
   toLabelCase,
   toSnakeCase,
 } from "./utils/format";
+import axios from "axios";
 
 export function activate(context: vscode.ExtensionContext) {
   const labelCaseCommand = vscode.commands.registerCommand(
@@ -144,11 +145,77 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const translateWithGeminiCommand = vscode.commands.registerCommand(
+    "nnt-toolkit.translateWithGemini",
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showInformationMessage("No active text editor.");
+        return;
+      }
+
+      const config = vscode.workspace.getConfiguration("nntToolkit");
+      const geminiApiKey = config.get<string>("geminiApiKey");
+      const targetLanguage = config.get<string[]>("targetLanguage", [
+        "vietnamese",
+      ]);
+
+      if (!geminiApiKey) {
+        vscode.window.showErrorMessage("Gemini API key is not configured.");
+        return;
+      }
+
+      const url =
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
+        geminiApiKey;
+      const { selections } = editor;
+
+      for (const selection of selections) {
+        const text = editor.document.getText(selection);
+
+        try {
+          const prompt = `Dịch câu sau sang ngôn ngữ ${targetLanguage}: "${text}". Chỉ trả về bản dịch duy nhất, không giải thích, không thêm thông tin khác.`;
+          const data = {
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+          };
+          const response = await axios.post<any>(url, data, {
+            headers: {
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              "Content-Type": "application/json",
+            },
+          });
+
+          const result =
+            response?.data?.candidates?.[0]?.content?.parts[0]?.text;
+
+          if (result) {
+            const newText = result.replace(/\n/g, ""); // Process text before calling edit
+
+            await editor.edit((editBuilder) => {
+              editBuilder.replace(selection, newText);
+            });
+          } else {
+            vscode.window.showErrorMessage("Translation result is empty.");
+          }
+        } catch (error) {
+          vscode.window.showErrorMessage(
+            "Failed to translate text: " + (error as Error).message
+          );
+        }
+      }
+    }
+  );
+
   context.subscriptions.push(
     labelCaseCommand,
     supperSnakeCaseCommand,
     columnFromJsonCommand,
-    titleToLocaleCommand
+    titleToLocaleCommand,
+    translateWithGeminiCommand
   );
 }
 
