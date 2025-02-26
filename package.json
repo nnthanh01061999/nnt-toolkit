@@ -9,19 +9,64 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:javascript,typescript"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "nnt-toolkit.removeConsoleLog",
-        "title": "Remove console log"
+        "command": "nnt-toolkit.labelCase",
+        "title": "NNT: Label Case"
       },
       {
-        "command": "nnt-toolkit.generateMessageFromJson",
-        "title": "Generate Message From Json"
+        "command": "nnt-toolkit.supperSnakeCase",
+        "title": "NNT: Super Snake Case"
+      },
+      {
+        "command": "nnt-toolkit.titleToLocale",
+        "title": "NNT: Title to locale"
+      },
+      {
+        "command": "nnt-toolkit.columnFromJson",
+        "title": "NNT: Column from JSON"
+      },
+      {
+        "command": "nnt-toolkit.translateWithGPT",
+        "title": "NNT: Translate wth GPT"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "NNT ToolKit Configuration",
+      "properties": {
+        "nntToolkit.renderBoolean": {
+          "type": "string",
+          "default": "<BooleanTag value={value} />",
+          "description": "Component render for boolean type"
+        },
+        "nntToolkit.renderNumber": {
+          "type": "string",
+          "default": "<NumberFormat value={value} />",
+          "description": "Component render for number type"
+        },
+        "nntToolkit.renderDatetime": {
+          "type": "string",
+          "default": "<DateTimeFormat value={value} />",
+          "description": "Component render for datetime type"
+        },
+        "nntToolkit.renderString": {
+          "type": "string",
+          "default": "<StringFormat value={value} />",
+          "description": "Component render for string type"
+        },
+        "nntToolkit.gptApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "GPT API Token"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
@@ -32,16 +77,19 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.78.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
+    "@types/vscode": "^1.78.0",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
+    "@vscode/test-electron": "^2.3.0",
     "eslint": "^8.39.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.0.4",
-    "@vscode/test-electron": "^2.3.0"
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "axios": "^1.7.9"
   }
 }
